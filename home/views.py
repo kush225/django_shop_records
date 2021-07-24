@@ -8,9 +8,6 @@ from selenium.common import exceptions
 import sqlite3
 # from webdriver_manager.chrome import ChromeDriverManager
 from datetime import date
-import logging
-
-logger = logging.getLogger(__name__)
 
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "wheat", "rice", "sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
 
@@ -39,16 +36,14 @@ class dbopen(object):
 def addData(cursor):
 	url="https://epos.delhi.gov.in/AbstractTransReport.jsp"
 
-	# options = webdriver.ChromeOptions()
-	# options.add_argument("headless")
-	# options.add_argument('--no-sandbox')
+	options = webdriver.ChromeOptions()
+	options.add_argument("headless")
+	options.add_argument('--no-sandbox')
+	options.add_argument('--disable-gpu')
+
 	# driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
-	options = webdriver.ChromeOptions()
 	options.binary_location = '/app/.apt/usr/bin/google-chrome' 
-	options.add_argument("--headless")
-	options.add_argument('--disable-gpu')
-	options.add_argument('--no-sandbox')
 	path="/app/.chromedriver/bin/chromedriver"
 	driver = webdriver.Chrome(executable_path=path, options=options)
 
@@ -60,7 +55,7 @@ def addData(cursor):
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsER"]/table/tbody/tr')
 		for rows in all_rows:
 			if rows.text.split(" ")[1] == "EAST":
-				logger.info(rows.text)
+				print(rows.text)
 				driver.execute_script("arguments[0].click();", WebDriverWait(rows, timeout).until(EC.element_to_be_clickable((By.XPATH, ".//td[2]/a"))))
 				break	
 
@@ -69,7 +64,7 @@ def addData(cursor):
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsERR"]/table/tbody/tr')
 		for rows in all_rows:
 			if rows.text.split(" ")[1] == "KRISHNA":
-				logger.info(rows.text)
+				print(rows.text)
 				driver.execute_script("arguments[0].click();", WebDriverWait(rows, timeout).until(EC.element_to_be_clickable((By.XPATH, ".//td[2]/a"))))
 				break	
 
@@ -78,7 +73,7 @@ def addData(cursor):
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsERRR"]/table/tbody/tr')
 		for rows in all_rows:
 			if rows.text.split(" ")[1] == "100100600029":
-				logger.info(rows.text)
+				print(rows.text)
 				driver.execute_script("arguments[0].click();", WebDriverWait(rows, timeout).until(EC.element_to_be_clickable((By.XPATH, ".//td[2]/a"))))
 				break	
 		
@@ -113,7 +108,7 @@ def addData(cursor):
 				all_rows = driver.find_elements_by_xpath('//table[@id="Report"]/tbody/tr')
 				
 				for rows in all_rows:
-					# logger.info(rows.text)
+					# print(rows.text)
 					my_list = rows.text.split(" ")
 					if today != my_list[5]:
 						not_done = False
@@ -128,19 +123,19 @@ def addData(cursor):
 					else:
 						driver.execute_script("arguments[0].click();", elem)	
 				except Exception as e:
-					logger.info('Next not available or page not loaded!',e)
+					print('Next not available or page not loaded!',e)
 		except exceptions.StaleElementReferenceException as e:
-			logger.error(e)
+			print(e)
 		except TimeoutException as e:
-			logger.error(e) 
-		logger.info(len(data))
+			print(e) 
+		print(len(data))
 		
 		return True
 	except TimeoutException:
-		logger.error("Timed out waiting for page to load")
+		print("Timed out waiting for page to load")
 		return False
 	except Exception as e:
-		logger.error(e)
+		print(e)
 		return False
 
 def fetchData(cursor):
@@ -227,9 +222,9 @@ def home(request):
 		success=addData(cursor)
 		if success:
 			my_dict = fetchData(cursor)
-			logger.info(my_dict)
+			print(my_dict)
 		else: 
-			logger.info("FAILED")
-	logger.debug(my_dict)
+			print("FAILED")
+	print(my_dict)
 	context = { "data": my_dict, "status": success}
 	return render(request, 'home.html', context)
