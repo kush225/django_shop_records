@@ -152,7 +152,6 @@ def fetchData():
 		dates = c.fetchall()
 		dates = [x[0] for x in dates]
 		sorted(dates, key=lambda x: datetime.strptime(x, '%d-%m-%Y'), reverse=True)
-		print("DATES", dates)
 		for date in dates:
 			my_dict = {"total_cards": [], "pm_wheat": [], "pm_rice": [], "kejriwal_wheat": [], "kejriwal_rice": [], "kejriwal_sugar": []}
 			new_dict[date]=my_dict

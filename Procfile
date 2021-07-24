@@ -1,1 +1,1 @@
-web: gunicorn SaleRecord.wsgi  --preload 
+web: gunicorn SaleRecord.wsgi  --preload --timeout 300
