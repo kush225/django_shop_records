@@ -1,1 +1,1 @@
-web: gunicorn SaleRecord.wsgi 
+web:gunicorn SaleRecord.wsgi 
