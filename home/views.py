@@ -10,6 +10,8 @@ import sqlite3
 from datetime import date
 import logging
 
+logger = logging.getLogger(__name__)
+
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "wheat", "rice", "sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
 
 current_date = date.today()
@@ -58,7 +60,7 @@ def addData(cursor):
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsER"]/table/tbody/tr')
 		for rows in all_rows:
 			if rows.text.split(" ")[1] == "EAST":
-				logging.info(rows.text)
+				logger.info(rows.text)
 				driver.execute_script("arguments[0].click();", WebDriverWait(rows, timeout).until(EC.element_to_be_clickable((By.XPATH, ".//td[2]/a"))))
 				break	
 
@@ -67,7 +69,7 @@ def addData(cursor):
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsERR"]/table/tbody/tr')
 		for rows in all_rows:
 			if rows.text.split(" ")[1] == "KRISHNA":
-				logging.info(rows.text)
+				logger.info(rows.text)
 				driver.execute_script("arguments[0].click();", WebDriverWait(rows, timeout).until(EC.element_to_be_clickable((By.XPATH, ".//td[2]/a"))))
 				break	
 
@@ -76,7 +78,7 @@ def addData(cursor):
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsERRR"]/table/tbody/tr')
 		for rows in all_rows:
 			if rows.text.split(" ")[1] == "100100600029":
-				logging.info(rows.text)
+				logger.info(rows.text)
 				driver.execute_script("arguments[0].click();", WebDriverWait(rows, timeout).until(EC.element_to_be_clickable((By.XPATH, ".//td[2]/a"))))
 				break	
 		
@@ -111,7 +113,7 @@ def addData(cursor):
 				all_rows = driver.find_elements_by_xpath('//table[@id="Report"]/tbody/tr')
 				
 				for rows in all_rows:
-					# logging.info(rows.text)
+					# logger.info(rows.text)
 					my_list = rows.text.split(" ")
 					if today != my_list[5]:
 						not_done = False
@@ -126,19 +128,19 @@ def addData(cursor):
 					else:
 						driver.execute_script("arguments[0].click();", elem)	
 				except Exception as e:
-					logging.info('Next not available or page not loaded!',e)
+					logger.info('Next not available or page not loaded!',e)
 		except exceptions.StaleElementReferenceException as e:
-			logging.error(e)
+			logger.error(e)
 		except TimeoutException as e:
-			logging.error(e) 
-		logging.info(len(data))
+			logger.error(e) 
+		logger.info(len(data))
 		
 		return True
 	except TimeoutException:
-		logging.error("Timed out waiting for page to load")
+		logger.error("Timed out waiting for page to load")
 		return False
 	except Exception as e:
-		logging.error(e)
+		logger.error(e)
 		return False
 
 def fetchData(cursor):
@@ -225,9 +227,9 @@ def home(request):
 		success=addData(cursor)
 		if success:
 			my_dict = fetchData(cursor)
-			logging.info(my_dict)
+			logger.info(my_dict)
 		else: 
-			logging.info("FAILED")
-	logging.debug(my_dict)
+			logger.info("FAILED")
+	logger.debug(my_dict)
 	context = { "data": my_dict, "status": success}
 	return render(request, 'home.html', context)
