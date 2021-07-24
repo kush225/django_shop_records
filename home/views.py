@@ -109,7 +109,8 @@ def addData():
 				auth_time integer
 				)""")
 			try:
-				while elem:
+				not_done = True
+				while elem and not_done:
 					element_present= EC.presence_of_all_elements_located((By.XPATH, '//table[@id="Report"]' ))
 					WebDriverWait(driver, timeout).until(element_present)
 					all_rows = driver.find_elements_by_xpath('//table[@id="Report"]/tbody/tr')
@@ -117,6 +118,9 @@ def addData():
 					for rows in all_rows:
 						# print(rows.text)
 						my_list = rows.text.split(" ")
+						if today != my_list[5]:
+							not_done = False
+							break
 						data.append(my_list)
 						
 						c.execute(f"INSERT INTO records VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(int(my_list[0]), my_list[1],my_list[2],my_list[3],my_list[4],my_list[5],float(my_list[6]),float(my_list[7]),float(my_list[8]),float(my_list[9]),float(my_list[10]), float(my_list[11]), my_list[12], float(my_list[13])))
