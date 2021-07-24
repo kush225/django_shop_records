@@ -9,6 +9,7 @@ from selenium.common import exceptions
 import sqlite3
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta, date
+import os
 
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "wheat", "rice", "sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
 
@@ -37,10 +38,22 @@ class dbopen(object):
 def addData():
 	url="https://epos.delhi.gov.in/AbstractTransReport.jsp"
 
-	options = webdriver.ChromeOptions()
-	options.add_argument("headless")
-	options.add_argument('--no-sandbox')
-	driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+	# options = webdriver.ChromeOptions()
+	# options.add_argument("headless")
+	# options.add_argument('--no-sandbox')
+	# driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+	option = webdriver.ChromeOptions()
+
+	# You will need to specify the binary location for Heroku 
+	# option.binary_location = os.getenv('GOOGLE_CHROME_BIN')
+	option.binary_location = '/app/.apt/usr/bin/google-chrome' 
+
+	option.add_argument("--headless")
+	option.add_argument('--disable-gpu')
+	option.add_argument('--no-sandbox')
+	path="/app/.chromedriver/bin/chromedriver"
+	driver = webdriver.Chrome(executable_path=path, options=option)
+
 	timeout = 30
 	driver.get(url)
 	try:
