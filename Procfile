@@ -1,1 +1,1 @@
-heroku ps:scale web=1
+web: gunicorn bootcamp.wsgi --log-file -
