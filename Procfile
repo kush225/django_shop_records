@@ -1,1 +1,1 @@
-web: gunicorn SaleRecord.wsgi --log-file -
+web: gunicorn SaleRecord.wsgi 
