@@ -6,21 +6,21 @@
 	<h2>Date: {{key}}</h2>
 	{% for k,v in value.items %}
 	<table style="border: 1px solid black; border-collapse: collapse;width:100%">
-		<thead style="background-color: #3f87a6;color: #fff;">
+		<thead style="background-color: #23284c;color: #fff;">
 			<tr>
 			    <th colspan="2" style="font-size: 56px; font-weight:700;">{{ k | replace | title }}</th>
 			</tr>
 		    </thead>
 		{% for item in v %}
 		{% if forloop.last %}
-		<tfoot style="background-color: #3f87a6;color: #fff;">
+		<tfoot style="background-color: #23284c;color: #fff;">
 			<tr style="text-align: center; font-size: 42px;">
 				<td scope="row"style="border: 1px solid black; border-collapse: collapse;width: 50%;">{{ item.0 }}</td>
 				<th style="border: 1px solid black; border-collapse: collapse;width: 50%;">{{ item.1 }}</th>
 			</tr>
 		</tfoot>
 		{% else %}
-		<tbody style="background-color: #e4f0f5;">
+		<tbody style="background-color: floralwhite;">
 			<tr style="text-align: center; font-size: 42px;">
 				<td scope="row"style="border: 1px solid black; border-collapse: collapse;width: 50%;">{{ item.0 }}</td>
 				<th style="border: 1px solid black; border-collapse: collapse;width: 50%;">{{ item.1 }}</th>
