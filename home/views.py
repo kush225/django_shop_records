@@ -142,10 +142,13 @@ def addData(cursor):
 		return False
 
 def executeQuery(cursor, query, date):
-	card_types = ["AAY", "PR", "PRS"]
+	card_types = ["AAY", "AAH"]
 	total = 0
 	rows = []
 	for card_type in card_types:
+		if card_type == "AAH":
+			card_type == "AAY"
+			query = query.replace("scheme=:scheme", "scheme!=:scheme")
 		cursor.execute(query,{'date':date, 'scheme':  card_type})
 		res= cursor.fetchone()
 		resp = res[0] if res[0] else 0 
