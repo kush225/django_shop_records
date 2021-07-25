@@ -21,7 +21,7 @@ class dbopen(object):
     Simple CM for sqlite3 databases. Commits everything at exit.
     """
     def __init__(self):
-        self.path = ":memory:" 
+        self.path = "data.db" 
 
     def __enter__(self):
         self.conn = sqlite3.connect(self.path)
