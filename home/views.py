@@ -86,7 +86,7 @@ def addData(cursor):
 		WebDriverWait(driver, timeout).until(element_present)
 		# elem = driver.find_element_by_link_text("Next")
 		elem = driver.find_element_by_xpath('//div[@id="Report_paginate"]/a[3]')
-		# cursor.execute("DROP TABLE IF EXISTS records")
+		cursor.execute("DROP TABLE IF EXISTS records")
 		cursor.execute("""CREATE TABLE records (
 			s_no integer,
 			rc_number text,
