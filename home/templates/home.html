@@ -3,14 +3,14 @@
 <div style="display: table;margin-right: auto;margin-left: auto;font-size: -webkit-xxx-large;">
 	{% if status %}
 	{% for key,value in data.items %}
-	<hr>
+	<!-- <hr> -->
 	<h1>Date: {{key}}</h1>
-	<hr>
+	<!-- <hr> -->
 	{% for k,v in value.items %}
 	<table style="border: 1px solid black; border-collapse: collapse;width:100%">
-		<caption style="font-size: 48px;">{{ k | replace | title }}</caption>
+		<caption style="font-size: 56px;">{{ k | replace | title }}</caption>
 		{% for item in v %}
-		<tr style="text-align: center; font-size: 36px;">
+		<tr style="text-align: center; font-size: 42px;">
 			{% for i in item %}
 			<td style="border: 1px solid black; border-collapse: collapse">{{ i }}</td>
 			{% endfor %}

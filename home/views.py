@@ -6,8 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common import exceptions
 import sqlite3
-# from webdriver_manager.chrome import ChromeDriverManager
 from datetime import date
+import os
 
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "wheat", "rice", "sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
 
@@ -34,22 +34,25 @@ class dbopen(object):
         self.conn.close()
 
 def addData(cursor):
-	url="https://epos.delhi.gov.in/AbstractTransReport.jsp"
-
-	options = webdriver.ChromeOptions()
-	options.add_argument("headless")
-	options.add_argument('--no-sandbox')
-	options.add_argument('--disable-gpu')
-
-	# driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-
-	options.binary_location = '/app/.apt/usr/bin/google-chrome' 
-	path="/app/.chromedriver/bin/chromedriver"
-	driver = webdriver.Chrome(executable_path=path, options=options)
-
-	timeout = 30
-	driver.get(url)
 	try:
+		url="https://epos.delhi.gov.in/AbstractTransReport.jsp"
+
+		options = webdriver.ChromeOptions()
+		options.add_argument("headless")
+		options.add_argument('--no-sandbox')
+		options.add_argument('--disable-gpu')
+
+		if os.getenv("PRODUCTION", False) and os.getenv("PRODUCTION") == "True":
+			options.binary_location = '/app/.apt/usr/bin/google-chrome' 
+			path="/app/.chromedriver/bin/chromedriver"
+			driver = webdriver.Chrome(executable_path=path, options=options)
+		else:
+			from webdriver_manager.chrome import ChromeDriverManager
+			driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+
+		timeout = 30
+		driver.get(url)
+	
 		element_present= EC.presence_of_all_elements_located((By.XPATH, '//div[@id="detailsER"]/table' ))
 		WebDriverWait(driver, timeout).until(element_present)
 		all_rows = driver.find_elements_by_xpath('//div[@id="detailsER"]/table/tbody/tr')
@@ -138,79 +141,40 @@ def addData(cursor):
 		print(e)
 		return False
 
-def fetchData(cursor):
+def executeQuery(cursor, query, date):
 	card_types = ["AAY", "PR", "PRS"]
-		
+	total = 0
+	rows = []
+	for card_type in card_types:
+		cursor.execute(query,{'date':date, 'scheme':  card_type})
+		res= cursor.fetchone()
+		resp = res[0] if res[0] else 0 
+		total = resp + total 
+		rows.append([card_type, resp])
+	rows.append(["Total", total])
+	return rows
+
+def fetchData(cursor):
 	new_dict = {}
 	# cursor.execute("SELECT DISTINCT(date) from records")
 	# dates = cursor.fetchall()
 	# dates = [x[0] for x in dates]
 	# sorted(dates, key=lambda x: datetime.strptime(x, '%d-%m-%Y'), reverse=True)
+	queries =[
+		["total_cards", "count(*)"], 
+		["pm_wheat", "SUM(pm_wheat)"], 
+		["pm_rice", "SUM(pm_rice)"],
+		["kejriwal_wheat", "SUM(wheat)"],
+		["kejriwal_rice", "SUM(rice)"],
+		["kejriwal_sugar", "SUM(sugar)"],
+		]
 	for date in dates:
 		my_dict = {"total_cards": [], "pm_wheat": [], "pm_rice": [], "kejriwal_wheat": [], "kejriwal_rice": [], "kejriwal_sugar": []}
 		new_dict[date]=my_dict
-		total_sale = 0
-		rows = []
-		for card_type in card_types:
-			cursor.execute(f"SELECT count(*) FROM records WHERE date=:date and scheme=:scheme",{'date':date, 'scheme':  card_type})
-			resp = cursor.fetchone()[0]
-			total_sale = resp + total_sale 
-			rows.append([card_type, resp])
-		rows.append(["Total", total_sale])
-		new_dict[date]["total_cards"] = rows
-
-		## PM
-		total = 0
-		rows = []
-		for card_type in card_types:
-			cursor.execute(f"SELECT SUM(pm_wheat) FROM records WHERE date=:date and scheme=:scheme",{'date':date, 'scheme':  card_type})
-			resp = cursor.fetchone()[0]
-			total = resp + total 
-			rows.append([card_type, resp])
-		rows.append(["Total", total])
-		new_dict[date]["pm_wheat"] = rows
-
-		total = 0
-		rows = []
-		for card_type in card_types:
-			cursor.execute(f"SELECT SUM(pm_rice) FROM records WHERE date=:date and scheme=:scheme",{'date':date, 'scheme':  card_type})
-			resp = cursor.fetchone()[0]
-			total = resp + total 
-			rows.append([card_type, resp])
-		rows.append(["Total", total])
-		new_dict[date]["pm_rice"] = rows
-			
-
-		## Kejriwal
-		total = 0
-		rows = []
-		for card_type in card_types:
-			cursor.execute(f"SELECT SUM(wheat) FROM records WHERE date=:date and scheme=:scheme",{'date':date, 'scheme':  card_type})
-			resp = cursor.fetchone()[0]
-			total = resp + total 
-			rows.append([card_type, resp])
-		rows.append(["Total", total])
-		new_dict[date]["kejriwal_wheat"] = rows
-
-		total = 0
-		rows = []
-		for card_type in card_types:
-			cursor.execute(f"SELECT SUM(rice) FROM records WHERE date=:date and scheme=:scheme",{'date':date, 'scheme':  card_type})
-			resp = cursor.fetchone()[0]
-			total = resp + total 
-			rows.append([card_type, resp])
-		rows.append(["Total", total])
-		new_dict[date]["kejriwal_rice"] = rows
-
-		total = 0
-		rows = []
-		for card_type in card_types:
-			cursor.execute(f"SELECT SUM(sugar) FROM records WHERE date=:date and scheme=:scheme",{'date':date, 'scheme':  card_type})
-			resp = cursor.fetchone()[0]
-			total = resp + total 
-			rows.append([card_type, resp])
-		rows.append(["Total", total])
-		new_dict[date]["kejriwal_sugar"] = rows
+		for item in queries:
+			query= "SELECT {} FROM records WHERE date=:date and scheme=:scheme".format(item[1])
+			rows = executeQuery(cursor, query, date)
+			new_dict[date][item[0]] = rows	
 
 	return new_dict
 
