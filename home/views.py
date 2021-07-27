@@ -147,9 +147,11 @@ def executeQuery(cursor, query, date):
 	rows = []
 	for card_type in card_types:
 		if card_type == "AAH":
-			card_type == "AAY"
+			temp = "AAY"
 			query = query.replace("scheme=:scheme", "scheme!=:scheme")
-		cursor.execute(query,{'date':date, 'scheme':  card_type})
+			cursor.execute(query,{'date':date, 'scheme':  temp})
+		else:
+			cursor.execute(query,{'date':date, 'scheme':  card_type})
 		res= cursor.fetchone()
 		resp = res[0] if res[0] else 0 
 		total = resp + total 
