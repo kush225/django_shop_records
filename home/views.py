@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -25,19 +26,23 @@ options = webdriver.ChromeOptions()
 options.add_argument("headless")
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-gpu')
+options.add_argument("--disable-dev-shm-usage")
+display_data = []
 
-if os.getenv("PRODUCTION", False) and os.getenv("PRODUCTION") == "True":
-	options.binary_location = '/app/.apt/usr/bin/google-chrome' 
-	path="/app/.chromedriver/bin/chromedriver"
-	driver = webdriver.Chrome(executable_path=path, options=options)
-else:
-	from webdriver_manager.chrome import ChromeDriverManager
-	driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+
+
 
 timeout = 30
 
 def addData():
 	try:
+		if os.getenv("PRODUCTION", False) and os.getenv("PRODUCTION") == "True":
+			options.binary_location = '/app/.apt/usr/bin/google-chrome' 
+			path="/app/.chromedriver/bin/chromedriver"
+			driver = webdriver.Chrome(executable_path=path, options=options)
+		else:
+			from webdriver_manager.chrome import ChromeDriverManager
+			driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 		driver.get(url)
 	
 		element_present= EC.presence_of_all_elements_located((By.XPATH, '//div[@id="detailsER"]/table' ))
@@ -106,14 +111,13 @@ def addData():
 			print(e) 
 		print(len(objs))
 		Records.objects.bulk_create(objs)
-		
-		return True
+		driver.close()
+		return (True, "")
 	except TimeoutException:
-		print("Timed out waiting for page to load")
-		return False
+		driver.close()
+		return (False, "Timed out waiting for page to load") 
 	except Exception as e:
-		print(e)
-		return False
+		return (False, repr(e))
 
 def executeQuery(query, date):
 	card_types = ["AAY", "AAH"]
@@ -131,7 +135,7 @@ def executeQuery(query, date):
 			else:
 				res=Records.objects.filter(scheme="AAY").aggregate(Sum(query[0]))[f'{query[0]}__sum']
 		
-		resp = res if res else 0 
+		resp = int(res) if res else 0 
 		total = resp + total 
 		rows.append([card_type, resp])
 	rows.append(["Total", total])
@@ -159,18 +163,34 @@ def fetchData():
 
 	return new_dict
 
-# Create your views here.
-def home(request):
+def fetch(request):
+	global display_data
+	display_data = None
 	my_dict = {}
 	success=False
 	# t1 = time.time()
-	success=addData()
+	success, msg =addData()
 	if success:
 		my_dict = fetchData()
 		print(my_dict)
 	else: 
-		print("FAILED")
+		context = {"error": msg}
+		return  JsonResponse(context, status = 400)
 	# t2 = time.time()
 	# print("TOTAL TIME", t2-t1)
-	context = { "data": my_dict, "status": success}
-	return render(request, 'home.html', context)
+	context = { "data": my_dict, "status": success, "date": today}
+	display_data = my_dict
+	return JsonResponse(context, status = 200)
+	# return render(request, 'table.html', context)
+
+def index(request):
+	my_dict ={
+		today: {"total_cards": [], "pm_wheat": [], "pm_rice": [], "kejriwal_wheat": [], "kejriwal_rice": [], "kejriwal_sugar": []}	
+	} 
+	context = { "data": my_dict, "status": False, "date": today}
+
+	return render(request, 'home.html', context)	
+
+def display(request):
+	context = { "data": display_data, "status": True, "date": today}
+	return render(request, 'table.html', context)
