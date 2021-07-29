@@ -37,9 +37,10 @@ timeout = 30
 def addData():
 	try:
 		if os.getenv("PRODUCTION", False) and os.getenv("PRODUCTION") == "True":
-			options.binary_location = '/app/.apt/usr/bin/google-chrome' 
-			path="/app/.chromedriver/bin/chromedriver"
-			driver = webdriver.Chrome(executable_path=path, options=options)
+			# options.binary_location = '/app/.apt/usr/bin/google-chrome' 
+			# path="/app/.chromedriver/bin/chromedriver"
+			# driver = webdriver.Chrome(executable_path=path, options=options)
+			driver = webdriver.PhantomJS()
 		else:
 			from webdriver_manager.chrome import ChromeDriverManager
 			driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
