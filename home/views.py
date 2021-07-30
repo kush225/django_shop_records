@@ -32,7 +32,7 @@ display_data = []
 
 
 
-timeout = 30
+timeout = 5
 
 def addData():
 	try:
