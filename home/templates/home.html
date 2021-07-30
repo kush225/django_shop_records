@@ -47,26 +47,31 @@
 				url: "{% url 'initialize' %}",
 				success: function (response) {
 					$(".spinner-span").html('Fetching districts...')
+					setTimeout(function(){
 					$.ajax({
 						type: 'GET',
 						url: "{% url 'call1' %}",
 						success: function (response) {
 							$(".spinner-span").html('Fetching offices...')
+							setTimeout(function(){
 							$.ajax({
 								type: 'GET',
 								url: "{% url 'call2' %}",
 								success: function (response) {
 									$(".spinner-span").html('Fetching FPS...')
+									setTimeout(function(){
 									$.ajax({
 										type: 'GET',
 										url: "{% url 'call3' %}",
 										success: function (response) {
 											$(".spinner-span").html('Fetching results...')
+											setTimeout(function(){
 											$.ajax({
 												type: 'GET',
 												url: "{% url 'call4' %}",
 												success: function (response) {
 													$(".spinner-span").html('Combining results...')
+													setTimeout(function(){
 													$.ajax({
 														type: 'GET',
 														url: "{% url 'combineData' %}",
@@ -90,6 +95,7 @@
 					</div>`)
 														}
 													})
+												},2000);
 
 												},
 												error: function (response) {
@@ -102,6 +108,7 @@
 					</div>`)
 												}
 											})
+										},2000);
 
 										},
 										error: function (response) {
@@ -114,6 +121,7 @@
 					</div>`)
 										}
 									})
+								},2000); 
 								},
 								error: function (response) {
 									$('#spinner').hide()
@@ -125,6 +133,7 @@
 					</div>`)
 								}
 							})
+						},2000);
 						},
 						error: function (response) {
 							$('#spinner').hide()
@@ -136,6 +145,7 @@
 					</div>`)
 						}
 					})
+				},2000);
 				},
 				error: function (response) {
 					$('#spinner').hide()
