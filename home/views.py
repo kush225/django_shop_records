@@ -150,7 +150,7 @@ def call4(request):
 			all_rows = driver.find_elements_by_xpath('//table[@id="Report"]/tbody/tr')
 			
 			for rows in all_rows:
-				print("call4: ", rows.text)
+				# print("call4: ", rows.text)
 				my_list = rows.text.split(" ")
 				if today != my_list[5]:
 					not_done = False
@@ -188,7 +188,7 @@ def combineData(request):
 		Records.objects.all().delete()
 		Records.objects.bulk_create(recordsList)	
 		my_dict = fetchData()
-		print(my_dict)
+		print(my_dict, recordsList)
 		display_data = my_dict
 		context = { "data": display_data, "status": True, "date": today}
 		return render(request, 'table.html', context)
