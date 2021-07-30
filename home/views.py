@@ -29,7 +29,7 @@ options.add_argument('--disable-gpu')
 options.add_argument("--disable-dev-shm-usage")
 display_data = []
 
-timeout = 10
+timeout = 25
 
 
 ######
@@ -167,14 +167,16 @@ def call4(request):
 					driver.execute_script("arguments[0].click();", elem)	
 			except Exception as e:
 				print('Next not available or page not loaded!',e)
+		print(len(recordsList))
+		driver.close()
 	except TimeoutException as e:
 		context = {"error": "Timed out waiting for page to load"}
 		return JsonResponse(context,status = 400)
 	except Exception as e:
 		context = {"error": repr(e)}
 		return JsonResponse(context,status = 400)
-	print(len(recordsList))
-	driver.close()
+	
+	
 	return JsonResponse(context, status = 200)
 
 def combineData(request):
