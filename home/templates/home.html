@@ -4,10 +4,24 @@
 
 <div class="container text-center" style="margin: 20px 0;">
 	<h2>Date: {{date}}</h2>
-	
-	<div class="d-flex spinner" style="right: 50%;bottom: 50%;transform: translate(50%,50%);position: absolute;">
-		<div class="spinner-border" id="spinner" style="width: 3rem; height: 3rem;" role="status">
-			<span class="visually-hidden">Loading...</span>
+
+	<!-- <div class="d-flex spinner" style="right: 50%;bottom: 50%;transform: translate(50%,50%);position: absolute;">
+			<div class="spinner-border" id="spinner" style="width: 3rem; height: 3rem;" role="status">
+				<span class="spinner-span">Loading...</span>
+			</div>
+		<div >
+			<strong>Collecting data</strong>
+		      </div>
+		
+	</div> -->
+	<div class="container-fluid" style="right: 50%;bottom: 50%;transform: translate(50%,50%);position: absolute;">
+		<div class="row justify-content-center">
+			<div class="spinner-border" id="spinner" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
+		</div>
+		<div class="row justify-content-center">
+			<strong class="spinner-span"></strong>
 		</div>
 	</div>
 	<span class="data align-middle">
@@ -24,21 +38,108 @@
 		$('#spinner').hide()
 		$('button').on('click', function (e) {
 			$('#spinner').html('').show()
+			$(".spinner-span").html('').show()
 			$('button').hide()
 			$(".data").html('').prepend(``)
+			$(".spinner-span").text('Initializing...')
 			$.ajax({
 				type: 'GET',
-				url: "{% url 'fetch' %}",
+				url: "{% url 'initialize' %}",
 				success: function (response) {
-					$('#spinner').hide()
-					$('button').html('Fetch again').show()
+					$(".spinner-span").html('Fetching districts...')
+					$.ajax({
+						type: 'GET',
+						url: "{% url 'call1' %}",
+						success: function (response) {
+							$(".spinner-span").html('Fetching offices...')
+							$.ajax({
+								type: 'GET',
+								url: "{% url 'call2' %}",
+								success: function (response) {
+									$(".spinner-span").html('Fetching FPS...')
+									$.ajax({
+										type: 'GET',
+										url: "{% url 'call3' %}",
+										success: function (response) {
+											$(".spinner-span").html('Fetching results...')
+											$.ajax({
+												type: 'GET',
+												url: "{% url 'call4' %}",
+												success: function (response) {
+													$(".spinner-span").html('Combining results...')
+													$.ajax({
+														type: 'GET',
+														url: "{% url 'combineData' %}",
+														success: function (response) {
+															$('#spinner').hide()
+															$(".spinner-span").hide()
+															$('button').html('Fetch again').show()
 
-					$('.data').html('').load(
-						"{% url 'display' %}", function (response) {}
-					)
+															$('.data').html('').load(
+																"{% url 'display' %}", function (response) { }
+															)
+
+														},
+														error: function (response) {
+															$('#spinner').hide()
+															$(".spinner-span").hide()
+															$('button').html('Fetch Data').show()
+															$(".data").html('').prepend(`
+					<div class="alert alert-danger" role="alert">
+						${response['responseJSON']['error']}
+					</div>`)
+														}
+													})
+
+												},
+												error: function (response) {
+													$('#spinner').hide()
+													$(".spinner-span").hide()
+													$('button').html('Fetch Data').show()
+													$(".data").html('').prepend(`
+					<div class="alert alert-danger" role="alert">
+						${response['responseJSON']['error']}
+					</div>`)
+												}
+											})
+
+										},
+										error: function (response) {
+											$('#spinner').hide()
+											$(".spinner-span").hide()
+											$('button').html('Fetch Data').show()
+											$(".data").html('').prepend(`
+					<div class="alert alert-danger" role="alert">
+						${response['responseJSON']['error']}
+					</div>`)
+										}
+									})
+								},
+								error: function (response) {
+									$('#spinner').hide()
+									$(".spinner-span").hide()
+									$('button').html('Fetch Data').show()
+									$(".data").html('').prepend(`
+					<div class="alert alert-danger" role="alert">
+						${response['responseJSON']['error']}
+					</div>`)
+								}
+							})
+						},
+						error: function (response) {
+							$('#spinner').hide()
+							$(".spinner-span").hide()
+							$('button').html('Fetch Data').show()
+							$(".data").html('').prepend(`
+					<div class="alert alert-danger" role="alert">
+						${response['responseJSON']['error']}
+					</div>`)
+						}
+					})
 				},
 				error: function (response) {
 					$('#spinner').hide()
+					$(".spinner-span").hide()
 					$('button').html('Fetch Data').show()
 					$(".data").html('').prepend(`
 					<div class="alert alert-danger" role="alert">

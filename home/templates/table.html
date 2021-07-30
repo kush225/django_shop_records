@@ -1,6 +1,5 @@
 {% load replace %}
 
-{% if status %}
 {% for key,value in data.items %}
 {% for k,v in value.items %}
 <table class="table table-dark table-striped">
@@ -33,6 +32,3 @@
 {% endfor %}
 </table>
 {% endfor %}
-{% else %}
-<h2>Failed to fetch</h2>
-{% endif %}
