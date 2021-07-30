@@ -189,9 +189,9 @@ def combineData(request):
 		Records.objects.bulk_create(recordsList)	
 		my_dict = fetchData()
 		print(my_dict)
-		context = { "data": my_dict, "date": today}
 		display_data = my_dict
-		return JsonResponse(context, status = 200)
+		context = { "data": display_data, "status": True, "date": today}
+		return render(request, 'table.html', context)
 	except Exception as e:
 		context = {"error": repr(e)}
 		return JsonResponse(context,status = 400)

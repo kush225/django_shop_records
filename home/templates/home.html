@@ -72,29 +72,29 @@
 												success: function (response) {
 													$(".spinner-span").html('Combining results...')
 													setTimeout(function(){
-													$.ajax({
-														type: 'GET',
-														url: "{% url 'combineData' %}",
-														success: function (response) {
+													// $.ajax({
+													// 	type: 'GET',
+													// 	url: "{% url 'combineData' %}",
+													// 	success: function (response) {
 															$('#spinner').hide()
 															$(".spinner-span").hide()
 															$('button').html('Fetch again').show()
 
 															$('.data').html('').load(
-																"{% url 'display' %}", function (response) { }
+																"{% url 'combineData' %}", function (response) { }
 															)
 
-														},
-														error: function (response) {
-															$('#spinner').hide()
-															$(".spinner-span").hide()
-															$('button').html('Fetch Data').show()
-															$(".data").html('').prepend(`
-					<div class="alert alert-danger" role="alert">
-						${response['responseJSON']['error']}
-					</div>`)
-														}
-													})
+					// 									},
+					// 									error: function (response) {
+					// 										$('#spinner').hide()
+					// 										$(".spinner-span").hide()
+					// 										$('button').html('Fetch Data').show()
+					// 										$(".data").html('').prepend(`
+					// <div class="alert alert-danger" role="alert">
+					// 	${response['responseJSON']['error']}
+					// </div>`)
+					// 									}
+					// 								})
 												},2000);
 
 												},
