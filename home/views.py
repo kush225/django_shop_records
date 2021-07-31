@@ -138,7 +138,7 @@ def call4(request):
 	try:
 		recordsList=[]
 		element_present= EC.presence_of_all_elements_located((By.XPATH, '//div[@id="Report_paginate"]' ))
-		WebDriverWait(driver, 15).until(element_present)
+		WebDriverWait(driver, timeout).until(element_present)
 		# elem = driver.find_element_by_link_text("Next")
 		elem = driver.find_element_by_xpath('//div[@id="Report_paginate"]/a[3]')
 		
@@ -146,7 +146,7 @@ def call4(request):
 		not_done = True
 		while elem and not_done:
 			element_present= EC.presence_of_all_elements_located((By.XPATH, '//table[@id="Report"]' ))
-			WebDriverWait(driver, 5).until(element_present)
+			WebDriverWait(driver, timeout).until(element_present)
 			all_rows = driver.find_elements_by_xpath('//table[@id="Report"]/tbody/tr')
 			
 			for rows in all_rows:
