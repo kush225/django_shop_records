@@ -285,20 +285,20 @@ def combineData(request):
 		return (False, repr(e))
 
 def executeQuery(query, date):
-	card_types = ["AAY", "AAH"]
+	card_types = ["AAY", "PR", "PRS"]
 	total = 0
 	rows = []
 	for card_type in card_types:
-		if card_type == "AAH":
-			if query[0] == "total_cards":
-				res= Records.objects.exclude(scheme="AAY").count()
-			else:
-				res=Records.objects.exclude(scheme="AAY").aggregate(Sum(query[0]))[f'{query[0]}__sum']	
+		# if card_type == "AAH":
+		if query[0] == "total_cards":
+			res= Records.objects.filter(scheme=card_type).count()
 		else:
-			if query[0] == "total_cards":
-				res=Records.objects.filter(scheme="AAY").count()
-			else:
-				res=Records.objects.filter(scheme="AAY").aggregate(Sum(query[0]))[f'{query[0]}__sum']
+			res=Records.objects.filter(scheme=card_type).aggregate(Sum(query[0]))[f'{query[0]}__sum']	
+		# else:
+		# 	if query[0] == "total_cards":
+		# 		res=Records.objects.filter(scheme="AAY").count()
+		# 	else:
+		# 		res=Records.objects.filter(scheme="AAY").aggregate(Sum(query[0]))[f'{query[0]}__sum']
 		
 		resp = int(res) if res else 0 
 		total = resp + total 

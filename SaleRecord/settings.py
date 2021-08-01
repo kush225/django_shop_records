@@ -81,25 +81,30 @@ WSGI_APPLICATION = 'SaleRecord.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DATABASES = {}
-if os.getenv("PRODUCTION", False) and os.getenv("PRODUCTION") == "True":
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-else:
-    DATABASES = {
-        # 'default': {
-        #     'ENGINE': 'django.db.backends.sqlite3',
-        #     'NAME': BASE_DIR / 'db.sqlite3',
-        # }
-        'default': {
-            'ENGINE': "django.db.backends.postgresql",
-            'NAME': "d9o65o690hj7r1",
-            'USER': "jhywircyfdcjrd",
-            'PASSWORD': "0e3b9b0c7fe604a2b4b4a67f8d17adc729376b0489f8712c34c34aad5185b410",
-            'HOST': "ec2-3-233-100-43.compute-1.amazonaws.com",
-            'PORT':  '5432',
+DATABASES = {
+    'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+# if os.getenv("PRODUCTION", False) and os.getenv("PRODUCTION") == "True":
+#     import dj_database_url
+#     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+        # 'default': {
+        #     'ENGINE': "django.db.backends.postgresql",
+        #     'NAME': "d9o65o690hj7r1",
+        #     'USER': "jhywircyfdcjrd",
+        #     'PASSWORD': "0e3b9b0c7fe604a2b4b4a67f8d17adc729376b0489f8712c34c34aad5185b410",
+        #     'HOST': "ec2-3-233-100-43.compute-1.amazonaws.com",
+        #     'PORT':  '5432',
+        # }
+    # }
 
 
 # Password validation
