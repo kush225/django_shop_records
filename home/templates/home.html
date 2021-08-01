@@ -41,111 +41,37 @@
 			$(".spinner-span").html('').show()
 			$('button').hide()
 			$(".data").html('').prepend(``)
-			$(".spinner-span").text('Initializing...')
+			$(".spinner-span").text('Fetching...')
 			$.ajax({
 				type: 'GET',
 				url: "{% url 'initialize' %}",
 				success: function (response) {
-					$(".spinner-span").html('Fetching districts...')
-					setTimeout(function(){
-					$.ajax({
-						type: 'GET',
-						url: "{% url 'call1' %}",
-						success: function (response) {
-							$(".spinner-span").html('Fetching offices...')
-							setTimeout(function(){
-							$.ajax({
-								type: 'GET',
-								url: "{% url 'call2' %}",
-								success: function (response) {
-									$(".spinner-span").html('Fetching FPS...')
-									setTimeout(function(){
-									$.ajax({
-										type: 'GET',
-										url: "{% url 'call3' %}",
-										success: function (response) {
-											$(".spinner-span").html('Fetching results...')
-											setTimeout(function(){
-											$.ajax({
-												type: 'GET',
-												url: "{% url 'call4' %}",
-												success: function (response) {
-													$(".spinner-span").html('Combining results...')
-													setTimeout(function(){
-													$.ajax({
-														type: 'GET',
-														url: "{% url 'combineData' %}",
-														success: function (response) {
-															$('#spinner').hide()
-															$(".spinner-span").hide()
-															$('button').html('Fetch again').show()
+					$(".spinner-span").html('Compiling...')
+					setTimeout(function () {
+						$.ajax({
+							type: 'GET',
+							url: "{% url 'combineData' %}",
+							success: function (response) {
+								$('#spinner').hide()
+								$(".spinner-span").hide()
+								$('button').html('Fetch again').show()
 
-															$('.data').html('').load(
-																"{% url 'display' %}", function (response) { }
-															)
+								$('.data').html('').load(
+									"{% url 'display' %}", function (response) { }
+								)
 
-														},
-														error: function (response) {
-															$('#spinner').hide()
-															$(".spinner-span").hide()
-															$('button').html('Fetch Data').show()
-															$(".data").html('').prepend(`
+							},
+							error: function (response) {
+								$('#spinner').hide()
+								$(".spinner-span").hide()
+								$('button').html('Fetch Data').show()
+								$(".data").html('').prepend(`
 					<div class="alert alert-danger" role="alert">
 						${response['responseJSON']['error']}
 					</div>`)
-														}
-													})
-												},2000);
-
-												},
-												error: function (response) {
-													$('#spinner').hide()
-													$(".spinner-span").hide()
-													$('button').html('Retry').show()
-													$(".data").html('').prepend(`
-					<div class="alert alert-danger" role="alert">
-						${response['responseJSON']['error']}
-					</div>`)
-												}
-											})
-										},2000);
-
-										},
-										error: function (response) {
-											$('#spinner').hide()
-											$(".spinner-span").hide()
-											$('button').html('Retry').show()
-											$(".data").html('').prepend(`
-					<div class="alert alert-danger" role="alert">
-						${response['responseJSON']['error']}
-					</div>`)
-										}
-									})
-								},2000); 
-								},
-								error: function (response) {
-									$('#spinner').hide()
-									$(".spinner-span").hide()
-									$('button').html('Retry').show()
-									$(".data").html('').prepend(`
-					<div class="alert alert-danger" role="alert">
-						${response['responseJSON']['error']}
-					</div>`)
-								}
-							})
-						},2000);
-						},
-						error: function (response) {
-							$('#spinner').hide()
-							$(".spinner-span").hide()
-							$('button').html('Retry').show()
-							$(".data").html('').prepend(`
-					<div class="alert alert-danger" role="alert">
-						${response['responseJSON']['error']}
-					</div>`)
-						}
-					})
-				},2000);
+							}
+						})
+					}, 2000);
 				},
 				error: function (response) {
 					$('#spinner').hide()
