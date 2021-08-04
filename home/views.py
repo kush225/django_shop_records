@@ -16,7 +16,9 @@ import pickle
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from ..SaleRecord.settings import PROJECT_DIR
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "kejriwal_wheat", "kejriwal_rice", "kejriwal_sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
 card_types = ["AAY", "PR", "PRS"]
@@ -74,10 +76,10 @@ def saveChart(data):
 						shadow=True, startangle=90, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
 					plt.title(key.replace("_", " ").title(), fontdict = {'fontsize' : 48})
 					plt.tight_layout()
-					plt.savefig( os.path.join(PROJECT_DIR, 'static', 'home', 'media', key + ".png") ,bbox_inches='tight',)
+					plt.savefig( os.path.join(BASE_DIR, 'staticfiles', 'media', key + ".png") ,bbox_inches='tight',)
 					plt.close()	
 				except Exception as e: 
-					print(e)
+					print("MATPLOTLIB",e)
 
 
 

@@ -16,7 +16,7 @@
 			{% for key,value in data.items %}
 			{% for k,v in value.items %}
 			<div class="card card-body" style="background-color: rgb(240,240,240);">
-				<img class="rounded" src="{% static 'home/media/'|add:k|add:'.png' %}" alt="{{k}}" />
+				<img class="rounded" src="{% static 'media/'|add:k|add:'.png' %}" alt="{{k}}" />
 			</div>
 			<br>
 			{% endfor %}
