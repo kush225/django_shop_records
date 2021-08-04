@@ -272,6 +272,9 @@ def index(request):
 def display(request):
 	with open("pickle2.db", "rb") as f:
 		display_data = pickle.load(f)
-	saveChart(display_data)
+	try:
+		saveChart(display_data)
+	except Exception as e:
+		print("MATPLOT2", e)
 	context = { "data": display_data, "date": today}
 	return render(request, 'table.html', context)
