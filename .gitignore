@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 .DS_Store
 *.db
-*.png
+# *.png
 *.jpg
 
 # C extensions
