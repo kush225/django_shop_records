@@ -76,7 +76,10 @@ def saveChart(data):
 						shadow=True, startangle=90, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
 					plt.title(key.replace("_", " ").title(), fontdict = {'fontsize' : 48})
 					plt.tight_layout()
-					plt.savefig( os.path.join(BASE_DIR, 'staticfiles', 'media', key + ".png") ,bbox_inches='tight',)
+					path =  os.path.join(BASE_DIR, 'staticfiles', 'media')
+					if not os.path.exists(path):
+						os.makedirs(path)
+					plt.savefig(os.path.join(path, key + ".png") ,bbox_inches='tight',)
 					plt.close()	
 				except Exception as e: 
 					print("MATPLOTLIB",e)
