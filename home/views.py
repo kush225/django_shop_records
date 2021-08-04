@@ -16,9 +16,7 @@ import pickle
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
+import io, base64
 
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "kejriwal_wheat", "kejriwal_rice", "kejriwal_sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
 card_types = ["AAY", "PR", "PRS"]
@@ -47,6 +45,7 @@ def autopct_format(values):
 	return my_format
 
 def saveChart(data):
+	charts = []
 	for _, v in data.items():
 		for key,value in v.items():
 			slices = []
@@ -61,30 +60,22 @@ def saveChart(data):
 				# total = sum(slices) 
 				# if total > 0:
 				try:
-					
 					plt.style.use('fivethirtyeight')
-					# fig1, ax1 = plt.subplots()
-					# ax1.pie(slices,explode=explode, labels=labels, wedgeprops={'edgecolor':'black'},
-					# 	shadow=True, startangle=90, pctdistance=0.4, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
-					# #draw circle
-					# centre_circle = plt.Circle((0,0),0.70,fc='white')
-					# fig = plt.gcf()
-					# fig.gca().add_artist(centre_circle)
-					# # Equal aspect ratio ensures that pie is drawn as a circle
-					# ax1.axis('equal')  
 					plt.pie(slices,explode=explode, labels=labels, wedgeprops={'edgecolor':'black'}, radius=1.2,
 						shadow=True, startangle=90, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
 					plt.title(key.replace("_", " ").title(), fontdict = {'fontsize' : 48})
 					plt.tight_layout()
-					path =  os.path.join(BASE_DIR, 'staticfiles', 'media')
-					if not os.path.exists(path):
-						os.makedirs(path)
-					plt.savefig(os.path.join(path, key + ".png") ,bbox_inches='tight',)
+					fig = plt.gcf()
+					buf = io.BytesIO()
+					fig.savefig(buf,format='png',bbox_inches='tight')
+					buf.seek(0)
+					uri = base64.b64encode(buf.getvalue()).decode()
+					charts.append(uri)
 					plt.close()	
 				except Exception as e: 
 					print("MATPLOTLIB",e)
 
-
+	return charts
 
 def initialize(request):
 	context = {}
@@ -272,9 +263,6 @@ def index(request):
 def display(request):
 	with open("pickle2.db", "rb") as f:
 		display_data = pickle.load(f)
-	try:
-		saveChart(display_data)
-	except Exception as e:
-		print("MATPLOT2", e)
-	context = { "data": display_data, "date": today}
+	charts = saveChart(display_data)
+	context = { "data": display_data, "date": today, "charts": charts}
 	return render(request, 'table.html', context)

@@ -13,13 +13,11 @@
 	</p>
 	<div class="accordion-group">
 		<div class="collapse" id="imageCollapse" data-parent="#myGroup">
-			{% for key,value in data.items %}
-			{% for k,v in value.items %}
+			{% for chart in charts %}
 			<div class="card card-body" style="background-color: rgb(240,240,240);">
-				<img class="rounded" src="{% static 'media/'|add:k|add:'.png' %}" alt="{{k}}" />
+				<img class="rounded" src='data:image/png;base64,{{ chart }}' />
 			</div>
 			<br>
-			{% endfor %}
 			{% endfor %}
 
 		</div>
