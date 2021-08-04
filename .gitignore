@@ -3,7 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 .DS_Store
-pickle.db
+*.db
+*.png
+*.jpg
 
 # C extensions
 *.so

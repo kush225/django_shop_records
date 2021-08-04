@@ -1,34 +1,67 @@
+{% load static %}
 {% load replace %}
+<div id="myGroup">
+	<p>
+		<button style="width: 120px;" class="btn btn-outline-dark btn-lg" type="button" data-toggle="collapse"
+			data-target="#dataCollapse" aria-controls="dataCollapse" aria-expanded="true">
+			Text
+		</button>
+		<button style="width: 120px;" class="btn btn-outline-dark btn-lg" type="button" data-toggle="collapse"
+			data-target="#imageCollapse" aria-expanded="false" aria-controls="imageCollapse">
+			Visualize
+		</button>
+	</p>
+	<div class="accordion-group">
+		<div class="collapse" id="imageCollapse" data-parent="#myGroup">
+			{% for key,value in data.items %}
+			{% for k,v in value.items %}
+			<div class="card card-body" style="background-color: rgb(240,240,240);">
+				<img class="rounded" src="{% static 'media/'|add:k|add:'.png' %}" alt="{{k}}" />
+			</div>
+			<br>
+			{% endfor %}
+			{% endfor %}
 
-{% for key,value in data.items %}
-{% for k,v in value.items %}
-<table class="table table-dark table-striped">
-	
-<thead >
-	<tr class="display-4"  style="text-align: center;font-size: 2.5rem;">
-		<th colspan="2" >{{ k | replace | title }}</th>
-	</tr>
-</thead>
-{% for item in v %}
-{% if forloop.last %}
-<tfoot>
-	<tr class="display-4" style="text-align: center; font-size: 2.5rem;"">
-		<td scope="row" style="width: 50%;">{{ item.0 }}</td>
-		<th style="width: 50%;">{{ item.1 }}</th>
-	</tr>
-</tfoot>
-{% else %}
-<tbody>
-	<tr  class="display-4" style="text-align: center;font-size: 2.5rem;"">
-		<td scope="row" style="width: 50%;">{{ item.0 }}</td>
-		<th style="width: 50%;">{{ item.1 }}</th>
-	</tr>
-</tbody>
+		</div>
+		<div class="collapse show" id="dataCollapse" data-parent="#myGroup">
+			{% for key,value in data.items %}
+			{% for k,v in value.items %}
+			<div class="card">
+				<div class="table-responsive">
+					<table style="margin: 0px;" class="table table-dark table-hover table-bordered">
+						<thead>
+							<tr class="display-4"
+								style="text-align: center;font-size: 2.5rem;">
+								<th colspan="2">{{ k | replace | title }}</th>
+							</tr>
+						</thead>
+						{% for item in v %}
+						{% if forloop.last %}
+						<tfoot>
+							<tr class="display-4"
+								style="text-align: center; font-size: 2.5rem;">
+								<td scope="row" style="width: 50%;">{{ item.0 }}</td>
+								<th style="width: 50%;">{{ item.1 }}</th>
+							</tr>
+						</tfoot>
+						{% else %}
+						<tbody>
+							<tr class="display-4"
+								style="text-align: center;font-size: 2.5rem;"">
+		<td scope=" row" style="width: 50%;">{{ item.0 }}</td>
+								<th style="width: 50%;">{{ item.1 }}</th>
+							</tr>
+						</tbody>
 
-{% endif %}
-{% endfor %}
+						{% endif %}
+						{% endfor %}
+					</table>
 
-<br>
-{% endfor %}
-</table>
-{% endfor %}
+				</div>
+			</div>
+			<br>
+			{% endfor %}
+			{% endfor %}
+		</div>
+	</div>
+</div>

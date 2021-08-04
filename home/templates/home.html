@@ -2,18 +2,8 @@
 {% load replace %}
 {% block content %}
 
-<div class="container text-center" style="margin: 20px 0;">
+<div class="container text-center" style="padding: 20px;">
 	<h2>Date: {{date}}</h2>
-
-	<!-- <div class="d-flex spinner" style="right: 50%;bottom: 50%;transform: translate(50%,50%);position: absolute;">
-			<div class="spinner-border" id="spinner" style="width: 3rem; height: 3rem;" role="status">
-				<span class="spinner-span">Loading...</span>
-			</div>
-		<div >
-			<strong>Collecting data</strong>
-		      </div>
-		
-	</div> -->
 	<div class="container-fluid" style="right: 50%;bottom: 50%;transform: translate(50%,50%);position: absolute;">
 		<div class="row justify-content-center">
 			<div class="spinner-border" id="spinner" role="status">
@@ -26,9 +16,8 @@
 	</div>
 	<span class="data align-middle">
 	</span>
-	<button type="button" class="btn btn-outline-dark btn-lg">Fetch Data</button>
+	<button type="button" class="btn btn-outline-dark btn-lg">Fetch Data</button>	
 </div>
-
 
 
 {% endblock %}

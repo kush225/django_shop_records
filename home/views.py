@@ -13,8 +13,12 @@ import os
 from .models import Records
 from django.db.models import Sum
 import pickle
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 columns=["s_no", "rc_number", "scheme", "type", "receipt_number", "date", "kejriwal_wheat", "kejriwal_rice", "kejriwal_sugar", "pm_wheat", "pm_rice", "amount", "portability", "auth_time"]
+card_types = ["AAY", "PR", "PRS"]
 date_format =  '%d-%m-%Y'
 current_date = date.today()
 today = current_date.strftime(date_format)
@@ -32,6 +36,47 @@ display_data = []
 
 timeout = 25
 
+def autopct_format(values):
+	def my_format(pct):
+		total = sum(values)
+		val = int(pct)*total/100
+		return '{:.1f}%\n({:.0f})'.format(pct, val)
+	return my_format
+
+def saveChart(data):
+	for _, v in data.items():
+		for key,value in v.items():
+			slices = []
+			labels = []
+			explode = []
+			for item in value:
+				if item[0] in card_types and item[1] != 0:
+					slices.append(item[1])
+					labels.append(item[0])
+					explode.append(0.05)
+			else:
+				# total = sum(slices) 
+				# if total > 0:
+				try:
+					
+					plt.style.use('fivethirtyeight')
+					# fig1, ax1 = plt.subplots()
+					# ax1.pie(slices,explode=explode, labels=labels, wedgeprops={'edgecolor':'black'},
+					# 	shadow=True, startangle=90, pctdistance=0.4, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
+					# #draw circle
+					# centre_circle = plt.Circle((0,0),0.70,fc='white')
+					# fig = plt.gcf()
+					# fig.gca().add_artist(centre_circle)
+					# # Equal aspect ratio ensures that pie is drawn as a circle
+					# ax1.axis('equal')  
+					plt.pie(slices,explode=explode, labels=labels, wedgeprops={'edgecolor':'black'}, radius=1.2,
+						shadow=True, startangle=90, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
+					plt.title(key.replace("_", " ").title(), fontdict = {'fontsize' : 48})
+					plt.tight_layout()
+					plt.savefig( "home/static/media/" + key + ".png",bbox_inches='tight',)
+					plt.close()	
+				except Exception as e: 
+					print(e)
 
 
 
@@ -166,13 +211,12 @@ def combineData(request):
 	try:
 		with open("pickle.db", "rb") as f:
 			recordsList = pickle.load(f)
-		
 		Records.objects.all().delete()
 		Records.objects.bulk_create(recordsList)	
 		my_dict = fetchData()
 		print(my_dict, recordsList)
 
-		with open("pickle.db", "wb") as f:
+		with open("pickle2.db", "wb") as f:
 			pickle.dump(my_dict, f)
 		return JsonResponse(context, status = 200)
 	except Exception as e:
@@ -180,20 +224,13 @@ def combineData(request):
 		return JsonResponse(context,status = 400)
 
 def executeQuery(query, date):
-	card_types = ["AAY", "PR", "PRS"]
 	total = 0
 	rows = []
 	for card_type in card_types:
-		# if card_type == "AAH":
 		if query[0] == "total_cards":
 			res= Records.objects.filter(scheme=card_type).count()
 		else:
-			res=Records.objects.filter(scheme=card_type).aggregate(Sum(query[0]))[f'{query[0]}__sum']	
-		# else:
-		# 	if query[0] == "total_cards":
-		# 		res=Records.objects.filter(scheme="AAY").count()
-		# 	else:
-		# 		res=Records.objects.filter(scheme="AAY").aggregate(Sum(query[0]))[f'{query[0]}__sum']
+			res=Records.objects.filter(scheme=card_type).aggregate(Sum(query[0]))[f'{query[0]}__sum']
 		
 		resp = int(res) if res else 0 
 		total = resp + total 
@@ -203,9 +240,6 @@ def executeQuery(query, date):
 
 def fetchData():
 	new_dict = {}
-	# dates = cursor.fetchall()
-	# dates = [x[0] for x in dates]
-	# sorted(dates, key=lambda x: datetime.strptime(x, '%d-%m-%Y'), reverse=True)
 	queries =[
 		["total_cards" ], 
 		["pm_wheat"], 
@@ -230,7 +264,8 @@ def index(request):
 	return render(request, 'home.html', context)	
 
 def display(request):
-	with open("pickle.db", "rb") as f:
+	with open("pickle2.db", "rb") as f:
 		display_data = pickle.load(f)
+	saveChart(display_data)
 	context = { "data": display_data, "date": today}
 	return render(request, 'table.html', context)
