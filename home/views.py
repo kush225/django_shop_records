@@ -57,23 +57,23 @@ def saveChart(data):
 					labels.append(item[0])
 					explode.append(0.05)
 			else:
-				# total = sum(slices) 
-				# if total > 0:
-				try:
-					plt.style.use('fivethirtyeight')
-					plt.pie(slices,explode=explode, labels=labels, wedgeprops={'edgecolor':'black'}, radius=1.2,
-						shadow=True, startangle=90, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
-					plt.title(key.replace("_", " ").title(), fontdict = {'fontsize' : 48})
-					plt.tight_layout()
-					fig = plt.gcf()
-					buf = io.BytesIO()
-					fig.savefig(buf,format='png',bbox_inches='tight')
-					buf.seek(0)
-					uri = base64.b64encode(buf.getvalue()).decode()
-					charts.append(uri)
-					plt.close()	
-				except Exception as e: 
-					print("MATPLOTLIB",e)
+				total = sum(slices) 
+				if total > 0:
+					try:
+						plt.style.use('fivethirtyeight')
+						plt.pie(slices,explode=explode, labels=labels, wedgeprops={'edgecolor':'black'}, radius=1.2,
+							shadow=True, startangle=90, autopct=autopct_format(slices), normalize=True,textprops={'fontsize': 20})
+						plt.title(key.replace("_", " ").title(), fontdict = {'fontsize' : 48})
+						plt.tight_layout()
+						fig = plt.gcf()
+						buf = io.BytesIO()
+						fig.savefig(buf,format='png',bbox_inches='tight')
+						buf.seek(0)
+						uri = base64.b64encode(buf.getvalue()).decode()
+						charts.append(uri)
+						plt.close()	
+					except Exception as e: 
+						print("MATPLOTLIB",e)
 
 	return charts
 
